@@ -41,6 +41,7 @@ public class JDBCBookManager implements BookManager {
 	}
 	
 	private void createTables() {
+		// TODO If the tables are already created, skip this step
 		try {
 			// Create the tables
 			Statement createTables1 = c.createStatement();
@@ -70,7 +71,7 @@ public class JDBCBookManager implements BookManager {
 					+ " book_id INTEGER REFERENCES books(id),"
 					+ " borrower_id INTEGER REFERENCES borrowers(id),"
 					+ " PRIMARY KEY (book_id, borrower_id))";
-			createTables4.executeUpdate(create3);
+			createTables4.executeUpdate(create4);
 			createTables4.close();
 		} catch (SQLException sqlE) {
 			System.out.println("Error in query");
