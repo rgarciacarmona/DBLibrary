@@ -33,6 +33,14 @@ public class Book implements Serializable {
 		this.borrowers = new ArrayList<Borrower>();
 	}
 
+	public Book(Integer isbn, String title, Date publicationDate, Author author) {
+		super();
+		this.isbn = isbn;
+		this.title = title;
+		this.publicationDate = publicationDate;
+		this.author = author;
+		this.borrowers = new ArrayList<Borrower>();
+	}
 
 
 	public Integer getIsbn() {

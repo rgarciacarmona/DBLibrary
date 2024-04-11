@@ -1,6 +1,7 @@
 package library.db.pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,9 +15,29 @@ public class Author implements Serializable {
 	private String name;
 	private String surname;
 	private List<Book> books;
+	
 	public Author() {
 		super();
+		this.books = new ArrayList<Book>();
 	}
+	
+	
+	public Author(String name, String surname) {
+		super();
+		this.name = name;
+		this.surname = surname;
+		this.books = new ArrayList<Book>();
+	}
+	
+	public Author(Integer id, String name, String surname) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.surname = surname;
+		this.books = new ArrayList<Book>();
+	}
+
+
 	public Integer getId() {
 		return id;
 	}

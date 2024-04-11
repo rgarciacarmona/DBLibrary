@@ -1,6 +1,7 @@
 package library.db.pojos;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,7 +17,18 @@ public class Borrower implements Serializable {
 	private List<Book> books;
 	public Borrower() {
 		super();
+		this.books = new ArrayList<Book>();
 	}
+	
+	
+	public Borrower(String name, String surname) {
+		super();
+		this.name = name;
+		this.surname = surname;
+		this.books = new ArrayList<Book>();
+	}
+
+
 	public Integer getId() {
 		return id;
 	}

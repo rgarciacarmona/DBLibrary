@@ -6,9 +6,9 @@ import library.db.pojos.*;
 
 public interface BookManager {
 
+	// Insert the book into the database
 	public void addBook(Book b);
-	public List<Book> searchBookByAuthor(Author a);
 	public List<Book> searchBookByTitle(String title);
-	public void deleteBook(Book b);
-	
+	public void deleteBook(int bookId);
+	public Book getBook(int id);
 }

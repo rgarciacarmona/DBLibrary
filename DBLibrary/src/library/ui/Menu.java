@@ -6,10 +6,14 @@ import java.io.InputStreamReader;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import library.db.interfaces.*;
+import library.db.jdbc.ConnectionManager;
+import library.db.jdbc.JDBCAuthorManager;
 import library.db.jdbc.JDBCBookManager;
-import library.db.pojos.Book;
+import library.db.jdbc.JDBCBorrowerManager;
+import library.db.pojos.*;
 
 public class Menu {
 
@@ -17,13 +21,27 @@ public class Menu {
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
 	private static BookManager bookMan;
+	private static AuthorManager authorMan;
+	private static BorrowerManager borrowMan;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		System.out.println("Welcome to the library!");
-		bookMan = new JDBCBookManager();
+		// Manager setup
+		ConnectionManager conMan = new ConnectionManager();
+		bookMan = new JDBCBookManager(conMan.getConnection());
+		authorMan = new JDBCAuthorManager(conMan.getConnection());
+		borrowMan = new JDBCBorrowerManager(conMan.getConnection());
+		// TODO delete book (delete by id)
+		// TODO change author (change by example)
+		// TODO borrow book (n-to-n insertion)
+		// TODO return book (n-to-n removal)
+		// TODO Go back to the menu after executing an option
+		// 		Instead of quitting
 		System.out.println("Choose your desired option");
 		System.out.println("1. Add a new book");
 		System.out.println("2. Search a book by its title");
+		System.out.println("3. Add a new author");
+		System.out.println("4. Add a new borrower");
 		System.out.println("0. Exit");
 		int choice = Integer.parseInt(r.readLine());
 		switch (choice) {
@@ -32,15 +50,26 @@ public class Menu {
 			break;
 		}
 		case 2: {
-			// TODO Search for existing books by title
+			searchBooksByTitle();
+			break;
+		}
+		case 3: {
+			addAuthor();
+			break;
+		}
+		case 4: {
+			addBorrower();
 			break;
 		}
 		case 0: {
+			conMan.close();
 			return;
 		}
 		}
 	}
 
+	// Get the book data from the user, create a book object, and call the addBook
+	// method of the DB manager
 	private static void addBook() throws NumberFormatException, IOException {
 		System.out.println("Please, write the book info:");
 		System.out.println("ISBN (without dashes):");
@@ -50,8 +79,51 @@ public class Menu {
 		System.out.println("Publication date (DD-MM-YYYY format):");
 		LocalDate localDate = LocalDate.parse(r.readLine(), formatter);
 		Date date = Date.valueOf(localDate);
-		Book book = new Book(isbn, title, date);
+		// Show and add authors
+		listAuthors();
+		Integer authorId = Integer.parseInt(r.readLine());
+		Author author = authorMan.getAuthor(authorId);
+		Book book = new Book(isbn, title, date, author);
 		bookMan.addBook(book);
+	}
+	
+	private static void listAuthors() throws IOException {
+		System.out.println("Author name (press enter to search all): ");
+		String name = r.readLine();
+		System.out.println("Author surname (press enter to search all): ");
+		String surname = r.readLine();
+		System.out.println("These are the available authors, choose one by typing their id:");
+		List<Author> authors = authorMan.getAuthorByNameSurname(name, surname);
+		System.out.println(authors);
+	}
+	
+	private static void searchBooksByTitle() throws IOException {
+		System.out.println("Please, type the book title");
+		String title = r.readLine();
+		List<Book> books = bookMan.searchBookByTitle(title);
+		for (Book book : books) {
+			System.out.println(book);
+		}
+	}
+	
+	private static void addAuthor() throws NumberFormatException, IOException {
+		System.out.println("Please, write the author info:");
+		System.out.println("Name:");
+		String name = r.readLine();
+		System.out.println("Surname:");
+		String surname = r.readLine();
+		Author author = new Author(name, surname);
+		authorMan.addAuthor(author);
+	}
+	
+	private static void addBorrower() throws NumberFormatException, IOException {
+		System.out.println("Please, write the borrower info:");
+		System.out.println("Name:");
+		String name = r.readLine();
+		System.out.println("Surname:");
+		String surname = r.readLine();
+		Borrower b = new Borrower(name, surname);
+		borrowMan.addBorrower(b);
 	}
 
 }
