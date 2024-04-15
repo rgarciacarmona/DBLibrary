@@ -12,9 +12,11 @@ import library.db.pojos.Borrower;
 public class JDBCBorrowerManager implements BorrowerManager {
 
 	private Connection c;
+	private ConnectionManager conMan;
 	
-	public JDBCBorrowerManager(Connection c) {
-		this.c = c;
+	public JDBCBorrowerManager(ConnectionManager conMan) {
+		this.conMan = conMan;
+		this.c = conMan.getConnection();
 	}
 	
 	@Override
@@ -35,13 +37,19 @@ public class JDBCBorrowerManager implements BorrowerManager {
 
 	@Override
 	public void borrowBook(int borrowerId, int bookId) {
-		// TODO Auto-generated method stub
+		// TODO Complete the method with this query
+		// Person 1 borrows book 73
+		// INSERT 1, 73
+		String template = "INSERT INTO borrows (book_id, borrower_id) VALUES (? ,?)";
 
 	}
 
 	@Override
 	public void returnBook(int borrowerId, int bookId) {
-		// TODO Auto-generated method stub
+		// TODO Complete the method with this query
+		// Person 1 returns book 73
+		// DELETE 1, 73
+		String template = "DELETE FROM borrows WHERE book_id = ? and borrower_id = ?";
 
 	}
 

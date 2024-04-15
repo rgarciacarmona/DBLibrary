@@ -28,20 +28,21 @@ public class Menu {
 		System.out.println("Welcome to the library!");
 		// Manager setup
 		ConnectionManager conMan = new ConnectionManager();
-		bookMan = new JDBCBookManager(conMan.getConnection());
-		authorMan = new JDBCAuthorManager(conMan.getConnection());
-		borrowMan = new JDBCBorrowerManager(conMan.getConnection());
+		bookMan = conMan.getBookMan();
+		authorMan = conMan.getAuthorMan();
+		borrowMan = conMan.getBorrowMan();
 		// TODO delete book (delete by id)
 		// TODO change author (change by example)
 		// TODO borrow book (n-to-n insertion)
 		// TODO return book (n-to-n removal)
 		// TODO Go back to the menu after executing an option
-		// 		Instead of quitting
+		// Instead of quitting
 		System.out.println("Choose your desired option");
 		System.out.println("1. Add a new book");
 		System.out.println("2. Search a book by its title");
 		System.out.println("3. Add a new author");
 		System.out.println("4. Add a new borrower");
+		System.out.println("5. Modify an author");
 		System.out.println("0. Exit");
 		int choice = Integer.parseInt(r.readLine());
 		switch (choice) {
@@ -59,6 +60,10 @@ public class Menu {
 		}
 		case 4: {
 			addBorrower();
+			break;
+		}
+		case 5: {
+			modifyAuthor();
 			break;
 		}
 		case 0: {
@@ -86,7 +91,7 @@ public class Menu {
 		Book book = new Book(isbn, title, date, author);
 		bookMan.addBook(book);
 	}
-	
+
 	private static void listAuthors() throws IOException {
 		System.out.println("Author name (press enter to search all): ");
 		String name = r.readLine();
@@ -96,7 +101,7 @@ public class Menu {
 		List<Author> authors = authorMan.getAuthorByNameSurname(name, surname);
 		System.out.println(authors);
 	}
-	
+
 	private static void searchBooksByTitle() throws IOException {
 		System.out.println("Please, type the book title");
 		String title = r.readLine();
@@ -105,7 +110,7 @@ public class Menu {
 			System.out.println(book);
 		}
 	}
-	
+
 	private static void addAuthor() throws NumberFormatException, IOException {
 		System.out.println("Please, write the author info:");
 		System.out.println("Name:");
@@ -115,7 +120,7 @@ public class Menu {
 		Author author = new Author(name, surname);
 		authorMan.addAuthor(author);
 	}
-	
+
 	private static void addBorrower() throws NumberFormatException, IOException {
 		System.out.println("Please, write the borrower info:");
 		System.out.println("Name:");
@@ -124,6 +129,28 @@ public class Menu {
 		String surname = r.readLine();
 		Borrower b = new Borrower(name, surname);
 		borrowMan.addBorrower(b);
+	}
+
+	private static void modifyAuthor() throws NumberFormatException, IOException {
+		// Search for an author to be modified
+		// User selects the author to be modified
+		Author a = null;
+		System.out.println("Here are the actual author's values");
+		System.out.println("Press enter to keep them or type a new value.");
+		System.out.println("Name (" + a.getName() + "): ");
+		String newName = r.readLine();
+		System.out.println("Surname (" + a.getSurname() + "): ");
+		String newSurname = r.readLine();
+		if (!newName.equals("")) {
+			// If I don't keep
+			a.setName(newName);
+		}
+		if (newSurname.equals("")) { // If I keep
+		}
+		else { // If I don't keep
+			a.setSurname(newSurname);
+		}
+		authorMan.changeAuthor(a);
 	}
 
 }

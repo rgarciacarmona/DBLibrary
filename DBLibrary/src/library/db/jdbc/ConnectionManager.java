@@ -5,9 +5,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import library.db.interfaces.*;
+
 public class ConnectionManager {
 
 	private Connection c;
+	private BookManager bookMan;
+	private AuthorManager authorMan;
+	private BorrowerManager borrowMan;
+	// Design pattern Singleton
 
 	public Connection getConnection() {
 		return c;
@@ -15,6 +21,9 @@ public class ConnectionManager {
 	
 	public ConnectionManager() {
 		this.connect();
+		this.bookMan = new JDBCBookManager(this);
+		this.authorMan = new JDBCAuthorManager(this);
+		this.borrowMan = new JDBCBorrowerManager(this);
 		this.createTables();
 	}
 	
@@ -83,5 +92,19 @@ public class ConnectionManager {
 			}
 		}
 	}
+
+	public BookManager getBookMan() {
+		return bookMan;
+	}
+
+	public AuthorManager getAuthorMan() {
+		return authorMan;
+	}
+
+	public BorrowerManager getBorrowMan() {
+		return borrowMan;
+	}
+	
+	
 	
 }

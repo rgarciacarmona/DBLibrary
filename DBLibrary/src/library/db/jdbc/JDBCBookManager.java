@@ -10,9 +10,11 @@ import library.db.pojos.*;
 public class JDBCBookManager implements BookManager {
 
 	private Connection c;
+	private ConnectionManager conMan;
 	
-	public JDBCBookManager(Connection c) {
-		this.c = c;
+	public JDBCBookManager(ConnectionManager conMan) {
+		this.conMan = conMan;
+		this.c = conMan.getConnection();
 	}
 	
 	@Override
@@ -46,8 +48,8 @@ public class JDBCBookManager implements BookManager {
 				String bookTitle = rs.getString("title");
 				Date pubDate = rs.getDate("publicationDate");
 				Integer authorId = rs.getInt("author_id");
-				// TODO get the author from the database
-				Book newBook = new Book(isbn, bookTitle, pubDate);
+				Author author = conMan.getAuthorMan().getAuthor(authorId);
+				Book newBook = new Book(isbn, bookTitle, pubDate, author);
 				books.add(newBook);
 			}
 			return books;

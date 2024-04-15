@@ -11,9 +11,11 @@ import library.db.pojos.Book;
 public class JDBCAuthorManager implements AuthorManager {
 
 	private Connection c;
+	private ConnectionManager conMan;
 
-	public JDBCAuthorManager(Connection c) {
-		this.c = c;
+	public JDBCAuthorManager(ConnectionManager conMan) {
+		this.conMan = conMan;
+		this.c = conMan.getConnection();
 	}
 
 	@Override
@@ -67,7 +69,8 @@ public class JDBCAuthorManager implements AuthorManager {
 
 	@Override
 	public void changeAuthor(Author a) {
-		// TODO Auto-generated method stub
+		// TODO Complete the method with this query
+		String template = "UPDATE authors SET name = ?, surname = ? WHERE id = ?";
 
 	}
 
