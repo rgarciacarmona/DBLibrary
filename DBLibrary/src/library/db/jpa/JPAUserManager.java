@@ -1,5 +1,7 @@
 package library.db.jpa;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 import library.db.interfaces.UserManager;
@@ -15,6 +17,14 @@ public class JPAUserManager implements UserManager {
 		em.getTransaction().begin();
 		em.createNativeQuery("PRAGMA foreign_keys=ON").executeUpdate();
 		em.getTransaction().commit();
+		// Create default roles
+		// If they don't exist already
+		try {
+			this.getRole("librarian");
+		} catch(NoResultException e) {
+			this.createRole(new Role("librarian"));
+			this.createRole(new Role("borrower"));
+		}
 	}
 	
 	@Override
@@ -33,10 +43,17 @@ public class JPAUserManager implements UserManager {
 
 	@Override
 	public Role getRole(String name) {
-		Query q = em.createNativeQuery("SELECT FROM roles WHERE name LIKE ?", Role.class);
+		Query q = em.createNativeQuery("SELECT * FROM roles WHERE name LIKE ?", Role.class);
 		q.setParameter(1, name);
 		Role r = (Role) q.getSingleResult();
 		return r;
+	}
+	
+	@Override
+	public List<Role> getAllRoles() {
+		Query q = em.createNativeQuery("SELECT * FROM roles", Role.class);
+		List<Role> roles = (List<Role>) q.getResultList();
+		return roles;
 	}
 
 	@Override
@@ -49,8 +66,16 @@ public class JPAUserManager implements UserManager {
 
 	@Override
 	public User login(String username, String password) {
-		// TODO Auto-generated method stub
-		return null;
+		User u = null;
+		Query q = em.createNativeQuery("SELECT * FROM users WHERE username = ? AND password = ?", User.class);
+		q.setParameter(1, username);
+		q.setParameter(2, password);
+		try {
+			u = (User) q.getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
+		return u;
 	}
 
 }

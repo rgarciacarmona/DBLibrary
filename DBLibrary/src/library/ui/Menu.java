@@ -13,6 +13,7 @@ import library.db.jdbc.ConnectionManager;
 import library.db.jdbc.JDBCAuthorManager;
 import library.db.jdbc.JDBCBookManager;
 import library.db.jdbc.JDBCBorrowerManager;
+import library.db.jpa.JPAUserManager;
 import library.db.pojos.*;
 
 public class Menu {
@@ -20,23 +21,77 @@ public class Menu {
 	private static BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
+	private static ConnectionManager conMan;
 	private static BookManager bookMan;
 	private static AuthorManager authorMan;
 	private static BorrowerManager borrowMan;
+	private static UserManager userMan;
 
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		System.out.println("Welcome to the library!");
 		// Manager setup
-		ConnectionManager conMan = new ConnectionManager();
+		// ALWAYS JDBC first
+		conMan = new ConnectionManager();
 		bookMan = conMan.getBookMan();
 		authorMan = conMan.getAuthorMan();
 		borrowMan = conMan.getBorrowMan();
+		// JAP later
+		userMan = new JPAUserManager();
 		// TODO delete book (delete by id)
 		// TODO change author (change by example)
 		// TODO borrow book (n-to-n insertion)
 		// TODO return book (n-to-n removal)
 		// TODO Go back to the menu after executing an option
 		// Instead of quitting
+		System.out.println("Choose your desired option");
+		System.out.println("1. Login");
+		System.out.println("2. Register");
+		int choice = Integer.parseInt(r.readLine());
+		switch (choice) {
+		case 1: {
+			menuLogin();
+			break;
+		}
+		case 2: {
+			menuRegister();
+			break;
+		}
+		case 0: {
+			conMan.close();
+			return;
+		}
+		}
+	}
+	
+	private static void menuLogin() throws NumberFormatException, IOException {
+		System.out.print("Username:");
+		String username = r.readLine();
+		System.out.print("Password:");
+		String password = r.readLine();
+		User u = userMan.login(username, password);
+		// REMOVE LATER just testing
+		if (u == null)
+			System.out.println("Wrong password");
+		else
+			System.out.println(u);
+		// TODO Redirect the user to the proper menu
+	}
+	
+	private static void menuRegister() throws NumberFormatException, IOException {
+		System.out.print("Choose a username:");
+		String username = r.readLine();
+		System.out.print("Choose a password:");
+		String password = r.readLine();
+		System.out.println("Choose your role (type its name):");
+		List<Role> roles = userMan.getAllRoles();
+		System.out.println(roles);
+		String roleName = r.readLine();
+		Role r = userMan.getRole(roleName);
+		User u = new User(username, password, r);
+		userMan.register(u);
+	}
+
+	private static void librarianMenu() throws NumberFormatException, IOException {
 		System.out.println("Choose your desired option");
 		System.out.println("1. Add a new book");
 		System.out.println("2. Search a book by its title");
@@ -72,7 +127,7 @@ public class Menu {
 		}
 		}
 	}
-
+	
 	// Get the book data from the user, create a book object, and call the addBook
 	// method of the DB manager
 	private static void addBook() throws NumberFormatException, IOException {

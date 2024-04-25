@@ -18,6 +18,7 @@ public class User implements Serializable {
 	@TableGenerator(name = "users", table = "sqlite_sequence",
 		pkColumnName = "name", valueColumnName = "seq", pkColumnValue = "users")
 	private Integer id;
+	@Column(nullable = false, unique = true)
 	private String username;
 	private String password;
 	@ManyToOne(fetch = FetchType.EAGER)
@@ -26,6 +27,15 @@ public class User implements Serializable {
 	public User() {
 		super();
 	}
+
+	
+	public User(String username, String password, Role role) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.role = role;
+	}
+
 
 	public Integer getId() {
 		return id;
